@@ -31,7 +31,7 @@ import yahoofinance.quotes.stock.StockQuote;
 public final class QuoteSyncJob {
 
     private static final int ONE_OFF_ID = 2;
-    private static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
+    public static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
     private static final int PERIOD = 300000;
     private static final int INITIAL_BACKOFF = 10000;
     private static final int PERIODIC_ID = 1;
@@ -71,9 +71,11 @@ public final class QuoteSyncJob {
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
-
+                //COMPLETED If symbol is not in quotes then return
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
+                if (quote.getAsk() == null)
+                    continue;
 
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
@@ -122,7 +124,8 @@ public final class QuoteSyncJob {
         Timber.d("Scheduling a periodic task");
 
 
-        JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_ID, new ComponentName(context, QuoteJobService.class));
+        JobInfo.Builder builder =
+                new JobInfo.Builder(PERIODIC_ID, new ComponentName(context, QuoteJobService.class));
 
 
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -130,7 +133,8 @@ public final class QuoteSyncJob {
                 .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
 
 
-        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        JobScheduler scheduler =
+                (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         scheduler.schedule(builder.build());
     }
@@ -153,14 +157,18 @@ public final class QuoteSyncJob {
             context.startService(nowIntent);
         } else {
 
-            JobInfo.Builder builder = new JobInfo.Builder(ONE_OFF_ID, new ComponentName(context, QuoteJobService.class));
+            JobInfo.Builder builder = new JobInfo.Builder(
+                    ONE_OFF_ID,
+                    new ComponentName(context, QuoteJobService.class)
+            );
 
 
             builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
 
 
-            JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            JobScheduler scheduler =
+                    (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
             scheduler.schedule(builder.build());
 
