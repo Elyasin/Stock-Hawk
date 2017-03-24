@@ -1,5 +1,6 @@
 # Stock-Hawk
-Stock Hawk project - Associate Android Developer Fast Track Program
+
+Stock Hawk project implementation for the Associate Android Developer Fast Track Program.
 
 ## MIT License
 
