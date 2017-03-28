@@ -145,9 +145,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
         } else {
-            Toast.makeText(this,
-                    "Symbol must consist of alphanumerical characters (including '.' and '-').",
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_symbol_incorrect, Toast.LENGTH_LONG).show();
         }
     }
 
