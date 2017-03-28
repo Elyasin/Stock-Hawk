@@ -25,6 +25,9 @@ import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -126,7 +129,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     void addStock(String symbol) {
-        if (symbol != null && !symbol.isEmpty()) {
+
+        Pattern simpleStockPattern = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9\\.\\-]{0,}$");
+        Matcher matcher = simpleStockPattern.matcher(symbol);
+
+        if (matcher.find()) {
 
             if (networkUp()) {
                 swipeRefreshLayout.setRefreshing(true);
@@ -137,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
+        } else {
+            Toast.makeText(this,
+                    "Symbol must consist of alphanumerical characters (including '.' and '-').",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
